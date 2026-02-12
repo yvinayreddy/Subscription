@@ -1,0 +1,10 @@
+{
+"material-icon-theme.files.associations": {
+  "*.service.js": "settings",
+  "*.middleware.js": "lock",
+  "*.model.js": "database",
+  "*.config.js": "settings",
+  "*.controller.js": "controller",
+  "*.route.js": "routing"
+}
+}
