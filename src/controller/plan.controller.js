@@ -1,5 +1,5 @@
 // controllers/planController.js
-const Plan = require("../models/Plan");
+const Plan = require("../models/Plan.model");
 
 /**
  * CREATE PLAN (Admin)

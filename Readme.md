@@ -107,7 +107,6 @@ MongoDB connection configured and working.
 ### 🔴 High Priority
 
 - Subscription controller not implemented
-- Subscription routes not implemented
 - Subscribe / Renew / Cancel endpoints missing
 - Get current subscription endpoint missing
 
