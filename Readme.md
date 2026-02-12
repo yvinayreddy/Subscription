@@ -1,196 +1,213 @@
----
+# 📸 Subscription-Based Content Platform API
 
-# 📸 Instagram-Like Backend API
+A backend API for a subscription-based content platform (Instagram-like with premium access) built using **Node.js, Express, MongoDB**, and **JWT authentication**.
 
-A backend API for an Instagram-like application built with **Node.js, Express, MongoDB**, and **JWT authentication**.
-This project focuses on clean backend architecture, secure authentication, and scalable API design.
+This project demonstrates secure authentication, content management, and scalable subscription lifecycle design suitable for academic and internship evaluation.
 
 ---
 
 ## 🚀 Tech Stack
 
-* **Node.js**
-* **Express.js**
-* **MongoDB + Mongoose**
-* **JWT** (Authentication)
-* **bcrypt** (Password hashing)
-* **ImageKit** (Image uploads via CDN)
-* **Multer** (In-memory file handling)
+- Node.js
+- Express.js
+- MongoDB + Mongoose
+- JWT (Authentication)
+- bcrypt (Password hashing)
+- ImageKit (CDN for image uploads)
+- Multer (Memory storage for uploads)
 
 ---
 
-## ✅ Current Features (Implemented)
+## 🏗️ Architecture
+
+The project follows a layered architecture:
+
+Routes → Controllers → Services → Models → Database
+
+- Routes define API endpoints  
+- Controllers handle request/response logic  
+- Services contain business logic (ImageKit integration)  
+- Models define database schemas  
+- Middleware handles authentication and authorization  
+
+---
+
+## ✅ Implemented Features
 
 ### 🔐 Authentication
 
-* User registration
-* User login
-* JWT-based authentication
-* Protected routes using middleware
-* Password hashing with bcrypt
+- User registration with validation
+- Password hashing using bcrypt
+- User login with JWT token (7-day expiry)
+- JWT middleware (`protect`) for protected routes
+- Secure password exclusion from responses
 
-### 🖼️ Posts
+---
 
-* Create posts with image uploads (ImageKit CDN)
-* Store image URLs in MongoDB
-* Fetch all posts (with pagination)
-* Fetch a single post
-* Fetch posts created by a user
+### 👤 User Management
 
-### 🗄️ Database Models
+- User model with name, email, password
+- Basic user routes defined
 
-* User model
-* Post model
+---
+
+### 📸 Post Management
+
+- Create post with image upload (ImageKit CDN)
+- Fetch all posts with pagination
+- Fetch single post by ID
+- Delete post by ID
+- Post model with timestamps
+
+Pagination supports:
+- page
+- limit
+- totalPages
+- totalPosts
+- hasNextPage
+- hasPrevPage
+
+---
+
+### 📦 Subscription Plans
+
+- Plan model (name, price, duration in days)
+- Full CRUD operations:
+  - Create plan
+  - Get all plans
+  - Get plan by ID
+  - Update plan
+  - Delete plan
+
+---
+
+### 🗄️ Database
+
+Mongoose models defined for:
+- User
+- Post
+- Plan
+- Subscription
+
+MongoDB connection configured and working.
+
+---
 
 ### 🛡️ Security
 
-* Passwords are never stored in plain text
-* JWT verification middleware
-* Sensitive fields excluded from responses
+- Passwords never stored in plain text
+- JWT verification middleware
+- Protected routes require authentication
+- Sensitive fields excluded from API responses
 
 ---
 
-## ⚠️ Current Limitations
+## ❌ Missing / Incomplete Features
 
-The project currently supports **CREATE operations only**.
-There is **no way to retrieve or manage data yet**.
+### 🔴 High Priority
 
----
+- Subscription controller not implemented
+- Subscription routes not implemented
+- Subscribe / Renew / Cancel endpoints missing
+- Get current subscription endpoint missing
 
-## ❌ Missing Core Features
-
-### 📥 Data Retrieval (READ)
-
-* No endpoint to fetch all posts
-* No endpoint to fetch a single post
-* No endpoint to fetch user profile
-* No endpoint to fetch posts created by a user
-
-### ✏️ Post Management
-
-* No edit post endpoint
-* No delete post endpoint
-
-### 🧪 Validation
-
-* No schema validation (Zod / Joi)
-* Vulnerable to invalid or malformed input
-
-### ⚠️ Error Handling
-
-* No centralized error handling
-* Inconsistent error response format
-
-### 🔗 Database Relationships
-
-* `Post.user` is stored as a `String`
-* Should reference `User` via `ObjectId`
+- User profile endpoint not implemented
+- Fetch posts by user endpoint not implemented
+- Update user profile endpoint missing
 
 ---
 
-## 🛣️ Roadmap (Planned Features)
+### 🟡 Medium Priority
 
-### 🟢 Phase 1: Essential (High Priority)
-
-These endpoints will make the application **usable**:
-
-
-* `GET /api/users/:userId/profile`
-  → Fetch user profile
-
-* `DELETE /api/posts/:postId`
-  → Delete own post (authorization required)
+- Post.user should reference ObjectId instead of String
+- No update post endpoint
+- No ownership check before deleting post
+- No request validation middleware (Zod/Joi)
+- No centralized error handling middleware
 
 ---
 
-### 🟡 Phase 2: Quality Improvements
+### 🟢 Lower Priority
 
-* Input validation using **Zod** or **Joi**
-* Centralized error handling middleware
-* Consistent API error response structure
-* Update post caption
-  → `PUT /api/posts/:postId`
-* Update user profile
-  → `PUT /api/users/:userId`
-
----
-
-### 🔵 Phase 3: Social Features
-
-* Like / Unlike posts
-* Comment system
-* Follow / Unfollow users
-* Feed endpoint (posts from followed users)
+- Like system
+- Comments
+- Follow system
+- Feed endpoint
+- Swagger documentation
+- Unit tests
+- Rate limiting
+- Logging system
 
 ---
 
-### ⚙️ Phase 4: Production Readiness
+## 🛣️ Roadmap
 
-* Unit & integration tests
-* API documentation (Swagger / OpenAPI)
-* Rate limiting
-* CORS configuration
-* Logging system
-* Environment-based configuration
+### Phase 1 – Core Subscription Lifecycle
+
+- Implement subscribe endpoint
+- Implement renew endpoint
+- Implement cancel endpoint
+- Implement get current subscription endpoint
+- Add subscription expiry logic
+- Add middleware to restrict premium access
+
+---
+
+### Phase 2 – Quality Improvements
+
+- Add request validation
+- Add centralized error handling
+- Fix database relationships (ObjectId reference)
+- Add update post endpoint
+- Add update user profile endpoint
+- Add ownership check for post deletion
+
+---
+
+### Phase 3 – Enhancements
+
+- Premium content access control
+- Like / Unlike posts
+- Comments system
+- Follow system
+- Feed endpoint
+
+---
+
+### Phase 4 – Production Readiness
+
+- Swagger API documentation
+- Unit & integration testing
+- Rate limiting
+- CORS configuration
+- Logging system
+- Environment-based configuration
 
 ---
 
 ## 📌 Project Status
 
-🛠️ **Active Development**
-Currently focused on implementing **Phase 1 (Essential APIs)** before moving to social features.
+Active development.
+
+Currently focused on completing Phase 1 (Subscription Lifecycle) before adding advanced social features.
 
 ---
 
 ## 🧠 Design Philosophy
 
-* Clear separation of concerns (controllers, services, routes, middleware)
-* Security-first approach
-* Scalable API structure
-* Industry-aligned backend practices
+- Separation of concerns
+- Modular architecture
+- RESTful API design
+- Secure authentication flow
+- Scalable subscription management
+- Gateway-ready payment simulation
 
 ---
 
-## 🧑‍💻 Getting Started (Basic)
+## 🧑‍💻 Getting Started
 
 ```bash
 git clone <repo-url>
 cd project
 npm install
 npm run dev
-```
-
-Ensure `.env` contains:
-
-```env
-MONGO_URI=your_mongodb_uri
-JWT_SECRET=your_secret
-IMAGEKIT_PUBLIC_KEY=xxx
-IMAGEKIT_PRIVATE_KEY=xxx
-IMAGEKIT_URL_ENDPOINT=xxx
-```
-
----
-
-## 📄 License
-
-This project is for **learning and practice purposes**.
-
----
-
-### ⭐ Recommendation
-
-> Start with **Phase 1 endpoints** to complete CRUD functionality
-> before adding social features or optimizations.
-
----
-
-If you want, next I can:
-
-* ✨ Refine this README for **resume/GitHub impact**
-* 🧱 Add **API examples** for Phase 1
-* 🧪 Create **Postman collection**
-* 📚 Add **Swagger docs**
-* 🏗️ Help you implement Phase 1 step-by-step
-
-Just tell me 👍
