@@ -14,3 +14,4 @@ app.use("/api/plan",planRoutes);
 app.use("/api/subscription",subscriptionRoutes);
 
 module.exports = app;
+

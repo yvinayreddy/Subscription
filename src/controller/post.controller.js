@@ -1,5 +1,6 @@
 const uploadFile = require('../services/post.service');
 const Post = require('../models/post.model');
+const { validateObjectId, sendValidationError, sendError } = require('../utils/validation');
 
 /**
  * @desc    Get all posts with pagination
@@ -26,7 +27,7 @@ exports.getAllPosts = async (req, res) => {
 
     // sending th info in response
     res.status(200).json({
-      success: true,
+      ok: true,
       data: posts,
       pagination: {
         currentPage: page,
@@ -38,11 +39,7 @@ exports.getAllPosts = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error('Get all posts error:', error.message);
-    res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    return sendError(res, 500, error.message);
   }
 };
 
@@ -55,30 +52,23 @@ exports.getPostById = async (req, res) => {
   try {
     const { postId } = req.params;
 
+    if (sendValidationError(res, validateObjectId(postId, 'Post ID'))) return;
+
     const post = await Post.findById(postId);
 
     if (!post) {
-      return res.status(404).json({
-        success: false,
-        message: "Post not found"
-      });
+      return sendError(res, 404, "Post not found", 'POST_NOT_FOUND');
     }
 
     return res.status(200).json({
-      success: true,
+      ok: true,
       data: post
     });
 
   } catch (error) {
-    console.error("Get post by ID error:", error.message);
-    return res.status(500).json({
-      success: false,
-      message: "Server error while fetching post"
-    });
+    return sendError(res, 500, error.message);
   }
 };
-
-
 
 /**
  * @desc    Create a new post
@@ -91,11 +81,9 @@ exports.createPost = async (req, res) => {
     const { caption, user } = req.body;
 
     if (!req.file || !user) {
-      return res.status(400).json({
-        success: false,
-        message: 'image and user are required',
-      });
+      return sendError(res, 400, 'Image and user are required', 'MISSING_REQUIRED_FIELDS');
     }
+
     //req.file is handled mu multer
     const uploadResult = await uploadFile(
         req.file.buffer, 
@@ -109,15 +97,11 @@ exports.createPost = async (req, res) => {
     });
 
     res.status(201).json({
-      success: true,
+      ok: true,
       data: newPost,
     });
   } catch (error) {
-    console.error('Post API error:', error.message);
-    res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    return sendError(res, 500, error.message);
   }
 };
 
@@ -131,26 +115,21 @@ exports.deletePostById = async (req, res) => {
   try {
     const { postId } = req.params;
 
+    if (sendValidationError(res, validateObjectId(postId, 'Post ID'))) return;
+
     const post = await Post.findByIdAndDelete(postId);
 
     if (!post) {
-      return res.status(404).json({
-        success: false,
-        message: "Post not found"
-      });
+      return sendError(res, 404, "Post not found", 'POST_NOT_FOUND');
     }
 
     return res.status(200).json({
-      success: true,
+      ok: true,
       message: "Post deleted successfully"
     });
 
   } catch (error) {
-    console.error("Delete post by ID error:", error.message);
-    return res.status(500).json({
-      success: false,
-      message: "Server error while deleting post"
-    });
+    return sendError(res, 500, error.message);
   }
 };
 

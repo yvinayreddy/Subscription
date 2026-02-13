@@ -1,34 +1,28 @@
 const User=require('../models/user.model');
 const bcrypt=require('bcrypt');
 const jwt = require("jsonwebtoken");
+const { validateRequired, handleValidationError, sendValidationError, sendError } = require('../utils/validation');
 
 exports.login=async (req,res)=>{
   try{
     const {email,password}=req.body;
 
-    // validation
-    if(!email || !password){
-      return res.status(400).json({ ok: false, message: "Email and password are required" });
-    }
+    // Validate required fields
+    if (sendValidationError(res, validateRequired({ email, password }, ['email', 'password']))) return;
 
-    // verification
-    const user=await User.findOne({email});
+    // Verification - include password field since it's hidden by default
+    const user=await User.findOne({email}).select('+password');
     if (!user) {
-      return res.status(401).json({
-        ok: false,
-        message: "Invalid credentials"
-      });
+      return sendError(res, 401, "Invalid credentials", 'INVALID_CREDENTIALS');
     }
 
-    // authentication
+    // Authentication
     const match=await bcrypt.compare(password,user.password);
     if(!match){
-      return res.status(401).json({
-        ok: false, message: "Invalid credentials"
-      });
+      return sendError(res, 401, "Invalid credentials", 'INVALID_CREDENTIALS');
     }
 
-    // token creation
+    // Token creation
     const token=jwt.sign(
       {userId:user._id},
       process.env.JWT_SECRET,
@@ -38,13 +32,11 @@ exports.login=async (req,res)=>{
     return res.status(200).json({
       ok: true,
       token,
-      user: { id: user._id, email: user.email, name: user.name },
+      user: { id: user._id, email: user.email, name: user.name, role: user.role }
     });
 
   }catch (err) {
-    return res.status(500).json({
-      ok: false, message: err.message
-    });
+    return sendError(res, 500, err.message);
   }
 }
 
@@ -57,57 +49,11 @@ exports.register = async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
-    // Validate required fields
-    if (!name || !email || !password) {
-      return res.status(400).json({
-        ok: false,
-        message: "Name, email, and password are required"
-      });
-    }
-
-    const trimmedName = String(name).trim();
-    const trimmedEmail = String(email).trim().toLowerCase();
-
-    // Name validation
-    if (trimmedName.length < 2) {
-      return res.status(400).json({
-        ok: false,
-        message: "Name must be at least 2 characters"
-      });
-    }
-
-    // Email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(trimmedEmail)) {
-      return res.status(400).json({
-        ok: false,
-        message: "Invalid email format"
-      });
-    }
-
-    // Password validation
-    if (String(password).length < 6) {
-      return res.status(400).json({
-        ok: false,
-        message: "Password must be at least 6 characters"
-      });
-    }
-
-    // Check existing email
-    const existing = await User.findOne({ email: trimmedEmail });
-    if (existing) {
-        return res.status(409).json({
-            ok: false,
-            message: "Email already registered"
-        });
-    }
-    
-    // hashing password by bcrypt and adding into DB
-    const hashed = await bcrypt.hash(password, 10);
+    // Create user - all validation & trimming handled by schema
     const user = await User.create({
-      name: trimmedName,
-      email: trimmedEmail,
-      password: hashed
+      name,
+      email,
+      password
     });
 
     return res.status(201).json({
@@ -115,14 +61,17 @@ exports.register = async (req, res) => {
       user: {
         id: user._id,
         email: user.email,
-        name: user.name
+        name: user.name,
+        role: user.role
       }
     });
 
   } catch (err) {
-    return res.status(500).json({
-      ok: false,
-      message: err.message
-    });
+    const error = handleValidationError(err);
+    if (error) {
+      return sendError(res, error.status, error.message, error.code);
+    }
+
+    return sendError(res, 500, err.message);
   }
 };

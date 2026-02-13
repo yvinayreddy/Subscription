@@ -1,31 +1,36 @@
 // controllers/planController.js
 const Plan = require("../models/Plan.model");
+const { validateRequired, validateObjectId, handleValidationError, sendValidationError, sendError } = require('../utils/validation');
 
 /**
  * CREATE PLAN (Admin)
  */
 exports.createPlan = async (req, res) => {
   try {
-    const { name, price, durationInDays, features } = req.body;
+    const { name, price, duration } = req.body;
+
+    // Validate required fields
+    if (sendValidationError(res, validateRequired({ name, price, duration }, ['name', 'price', 'duration']))) return;
 
     const plan = await Plan.create({
       name,
       price,
-      durationInDays,
-      features
+      duration
     });
 
     res.status(201).json({
-      success: true,
+      ok: true,
       message: "Plan created successfully",
       plan
     });
 
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message
-    });
+    const err = handleValidationError(error);
+    if (err) {
+      return sendError(res, err.status, err.message, err.code);
+    }
+
+    return sendError(res, 500, error.message);
   }
 };
 
@@ -37,33 +42,39 @@ exports.getPlans = async (req, res) => {
     const plans = await Plan.find();
 
     res.status(200).json({
-      success: true,
+      ok: true,
+      count: plans.length,
       plans
     });
 
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message
-    });
+    return sendError(res, 500, error.message);
   }
 };
+
 
 /**
  * GET SINGLE PLAN
  */
 exports.getPlanById = async (req, res) => {
   try {
-    const plan = await Plan.findById(req.params.id);
+    const { id } = req.params;
+
+    if (sendValidationError(res, validateObjectId(id, 'Plan ID'))) return;
+
+    const plan = await Plan.findById(id);
 
     if (!plan) {
-      return res.status(404).json({ message: "Plan not found" });
+      return sendError(res, 404, "Plan not found", 'PLAN_NOT_FOUND');
     }
 
-    res.status(200).json(plan);
+    res.status(200).json({
+      ok: true,
+      plan
+    });
 
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    return sendError(res, 500, error.message);
   }
 };
 
@@ -72,20 +83,29 @@ exports.getPlanById = async (req, res) => {
  */
 exports.updatePlan = async (req, res) => {
   try {
-    const plan = await Plan.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true }
-    );
+    const { id } = req.params;
+
+    if (sendValidationError(res, validateObjectId(id, 'Plan ID'))) return;
+
+    const plan = await Plan.findByIdAndUpdate(id, req.body, { new: true });
+
+    if (!plan) {
+      return sendError(res, 404, "Plan not found", 'PLAN_NOT_FOUND');
+    }
 
     res.status(200).json({
-      success: true,
-      message: "Plan updated",
+      ok: true,
+      message: "Plan updated successfully",
       plan
     });
 
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    const err = handleValidationError(error);
+    if (err) {
+      return sendError(res, err.status, err.message, err.code);
+    }
+
+    return sendError(res, 500, error.message);
   }
 };
 
@@ -94,15 +114,23 @@ exports.updatePlan = async (req, res) => {
  */
 exports.deletePlan = async (req, res) => {
   try {
-    await Plan.findByIdAndDelete(req.params.id);
+    const { id } = req.params;
+
+    if (sendValidationError(res, validateObjectId(id, 'Plan ID'))) return;
+
+    const plan = await Plan.findByIdAndDelete(id);
+
+    if (!plan) {
+      return sendError(res, 404, "Plan not found", 'PLAN_NOT_FOUND');
+    }
 
     res.status(200).json({
-      success: true,
-      message: "Plan deleted"
+      ok: true,
+      message: "Plan deleted successfully"
     });
 
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    return sendError(res, 500, error.message);
   }
 };
 

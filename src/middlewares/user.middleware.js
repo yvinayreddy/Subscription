@@ -1,5 +1,50 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/user.model');
+const mongoose = require('mongoose');
+
+/**
+ * @desc    Bind and validate userId from route parameter
+ * @access  Private
+ *
+ * What it does:
+ * - Validates userId is a valid MongoDB ObjectId
+ * - Verifies user exists in database
+ * - Attaches user to req object
+ */
+exports.bindUserId = async (req, res, next) => {
+  try {
+    const { userId } = req.params;
+
+    // Validate if userId is a valid MongoDB ObjectId
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({
+        ok: false,
+        message: 'Invalid user ID format'
+      });
+    }
+
+    // Find user by ID
+    const user = await User.findById(userId).select('-password');
+
+    if (!user) {
+      return res.status(404).json({
+        ok: false,
+        message: 'User not found'
+      });
+    }
+
+    // Attach user to request
+    req.user = user;
+    req.userId = userId;
+    next();
+
+  } catch (err) {
+    return res.status(500).json({
+      ok: false,
+      message: err.message
+    });
+  }
+};
 
 /**
  * @desc    Protect routes by verifying JWT
