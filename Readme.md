@@ -1,12 +1,14 @@
 # 📸 Subscription-Based Content Platform API
 
-A backend API for a subscription-based content platform (Instagram-like with premium access) built using **Node.js, Express, MongoDB**, and **JWT authentication**.
+A backend API for a **subscription-based content platform** where users can create posts and access premium content through subscription plans.
 
-This project demonstrates secure authentication, content management, and scalable subscription lifecycle design suitable for academic and internship evaluation.
+Built using **Node.js, Express, MongoDB**, and **JWT authentication**, with a modular architecture designed for scalability and maintainability. :contentReference[oaicite:0]{index=0}
 
 ---
 
 ## 🚀 Tech Stack
+
+### Backend
 
 - Node.js
 - Express.js
@@ -14,214 +16,345 @@ This project demonstrates secure authentication, content management, and scalabl
 - JWT (Authentication)
 - bcrypt (Password hashing)
 - ImageKit (CDN for image uploads)
-- Multer (Memory storage for uploads)
+- Multer (File uploads)
+- Express Rate Limit
+- Swagger (API documentation)
+- Jest + Supertest (Testing)
 
 ---
 
 ## 🏗️ Architecture
 
-The project follows a layered architecture:
+The backend follows a **Service Layer Architecture**:
 
 Routes → Controllers → Services → Models → Database
 
-- Routes define API endpoints  
-- Controllers handle request/response logic  
-- Services contain business logic (ImageKit integration)  
-- Models define database schemas  
-- Middleware handles authentication and authorization  
+### Layer Responsibilities
+
+| Layer | Responsibility |
+|------|------|
+| Routes | Define API endpoints |
+| Controllers | Handle request/response logic |
+| Services | Contain business logic |
+| Models | Define database schemas |
+| Middleware | Authentication, authorization, error handling |
+| Utils | Reusable helpers and configuration |
+
+This separation improves **maintainability, testing, and scalability**.
 
 ---
 
-## ✅ Implemented Features
+## ✅ Current Features (Implemented)
 
 ### 🔐 Authentication
 
 - User registration with validation
+- User login with JWT token generation
 - Password hashing using bcrypt
-- User login with JWT token (7-day expiry)
-- JWT middleware (`protect`) for protected routes
+- Protected routes using authentication middleware
 - Secure password exclusion from responses
-
----
-
-### 👤 User Management
-
-- User model with name, email, password
-- Basic user routes defined
 
 ---
 
 ### 📸 Post Management
 
-- Create post with image upload (ImageKit CDN)
-- Fetch all posts with pagination and optional user filter / search
-- Fetch single post by ID with ID validation
-- Delete post by ID with ID validation
-- Basic input validation on controllers (required fields, caption length)
-- Post model with timestamps
+- Create posts with image upload via **ImageKit CDN**
+- Fetch all posts with **pagination and search**
+- Fetch a single post by ID
+- Delete posts (owner only)
+- Image storage via CDN
+- Post filtering and pagination support
 
-Pagination supports:
-- page
-- limit (capped at 100)
-- totalPages
-- totalPosts
-- hasNextPage
-- hasPrevPage
+Pagination response includes:
+
+- `currentPage`
+- `totalPages`
+- `totalPosts`
+- `hasNextPage`
+- `hasPrevPage`
 
 ---
 
 ### 📦 Subscription Plans
 
-- Plan model (name, price, duration in days)
-- Full CRUD operations:
-  - Create plan
-  - Get all plans
-  - Get plan by ID
-  - Update plan
-  - Delete plan
+Admin users can manage subscription plans.
+
+Features:
+
+- Create plan
+- Get all plans
+- Get plan by ID
+- Update plan
+- Delete plan
+
+Each plan includes:
+
+- name
+- price
+- duration (days)
+- active status
 
 ---
 
-### 🗄️ Database
+### 📅 Subscription Management
 
-Mongoose models defined for:
-- User
-- Post
-- Plan
-- Subscription
+- Create user subscriptions
+- Get subscription by ID
+- Get all subscriptions (with filters)
+- Cancel subscriptions
+- Renew subscriptions
+- Track subscription status
 
-MongoDB connection configured and working.
+Subscription status types:
 
-### ⚙️ CORS
-
-When running frontend and backend on different ports (e.g. 3001 and 3000), you must allow cross‑origin requests. The server now uses `cors` middleware with
-
-```
-CORS_ORIGIN=http://localhost:3001
-```
-
-in `.env`. Customize as needed for other environments.
+- `active`
+- `cancel`
+- `expired`
 
 ---
 
-### 🛡️ Security
+### 🛡️ Security & Utilities
 
-- Passwords never stored in plain text
-- JWT verification middleware
-- Protected routes require authentication
-- Sensitive fields excluded from API responses
-- Added helmet for security headers
-- Rate limiting middleware (100 requests / 15 min per IP)
-
----
-
-## ❌ Missing / Incomplete Features
-
-### 🔴 High Priority
-
-- Subscription controller not implemented
-- Subscribe / Renew / Cancel endpoints missing
-- Get current subscription endpoint missing
-
-- User profile endpoint not implemented
-- Fetch posts by user endpoint not implemented
-- Update user profile endpoint missing
+- JWT authentication middleware
+- Role-based authorization middleware
+- Helmet security headers
+- Rate limiting (100 requests / 15 minutes per IP)
+- CORS configuration
+- Centralized error handling
+- Async error handler wrapper
 
 ---
 
-### 🟡 Medium Priority
+### 📚 API Documentation
 
-- Post.user should reference ObjectId instead of String
-- No update post endpoint
-- No ownership check before deleting post
-- No request validation middleware (Zod/Joi)
-- No centralized error handling middleware
+Swagger documentation available at:
+
+
+Swagger provides:
+
+- endpoint documentation
+- request format
+- response format
+- authentication requirements
 
 ---
 
-### 🟢 Lower Priority
+### 🧪 Testing
 
-- Like system
-- Comments
-- Follow system
-- Feed endpoint
-- Logging system
+The project includes automated tests using:
+
+- Jest
+- Supertest
+
+Test coverage includes:
+
+- service logic
+- route behavior
+- controller validation
+- API response status checks
+
+---
+
+## 📁 Project Structure
+src
+├ config
+│ ├ api.config.js
+│ ├ db.config.js
+│ └ imagekit.config.js
+├ controllers
+│ ├ user.controller.js
+│ ├ post.controller.js
+│ ├ plan.controller.js
+│ └ subscription.controller.js
+├ services
+│ ├ user.service.js
+│ ├ post.service.js
+│ ├ plan.service.js
+│ └ subscription.service.js
+├ models
+│ ├ user.model.js
+│ ├ post.model.js
+│ ├ plan.model.js
+│ └ subscription.model.js
+├ routes
+│ ├ user.routes.js
+│ ├ post.routes.js
+│ ├ plan.routes.js
+│ └ subscription.routes.js
+├ middlewares
+│ ├ auth.middleware.js
+│ ├ role.middleware.js
+│ └ error.middleware.js
+├ utils
+│ ├ asyncHandler.js
+│ └ validation.js
+---
+
+## 📡 API Endpoints
+
+### Authentication
+
+
+POST /api/auth/register
+POST /api/auth/login
+
+
+---
+
+### Posts
+
+
+GET /api/posts
+GET /api/posts/:postId
+POST /api/posts
+DELETE /api/posts/:postId
+
+
+---
+
+### Plans
+
+
+GET /api/plans
+GET /api/plans/:id
+POST /api/plans
+PUT /api/plans/:id
+DELETE /api/plans/:id
+
+
+---
+
+### Subscriptions
+
+
+GET /api/subscriptions
+GET /api/subscriptions/:subscriptionId
+POST /api/subscriptions
+PUT /api/subscriptions/:subscriptionId/cancel
+PUT /api/subscriptions/:subscriptionId/renew
+
+
+---
+
+## ⚠️ Current Limitations
+
+- No post editing endpoint
+- No user profile management
+- No payment gateway integration
+- No email notifications for subscriptions
+- Limited filtering options for posts
 
 ---
 
 ## 🛣️ Roadmap
 
-### Phase 1 – Core Subscription Lifecycle
+### Phase 1 – Core Enhancements
 
-- Implement subscribe endpoint
-- Implement renew endpoint
-- Implement cancel endpoint
-- Implement get current subscription endpoint
-- Add subscription expiry logic
-- Add middleware to restrict premium access
+- Post editing endpoint
+- User profile management
+- Premium content access control
+- Subscription expiry automation
 
 ---
 
 ### Phase 2 – Quality Improvements
 
-- Add request validation
-- Add centralized error handling
-- Fix database relationships (ObjectId reference)
-- Add update post endpoint
-- Add update user profile endpoint
-- Add ownership check for post deletion
+- Input validation using Zod/Joi
+- Improved logging system
+- API rate limiting per user
+- Environment-based configuration
 
 ---
 
-### Phase 3 – Enhancements
+### Phase 3 – Social Features
 
-- Premium content access control
 - Like / Unlike posts
 - Comments system
 - Follow system
-- Feed endpoint
+- Personalized feed
 
 ---
 
 ### Phase 4 – Production Readiness
 
-- CORS configuration
-- Logging system
-- Environment-based configuration
+- Docker containerization
+- CI/CD pipeline
+- Monitoring & health checks
+- Database indexing optimization
 
 ---
 
 ## 📌 Project Status
 
-Active development.
+🛠 **Active Development**
 
-Several backend improvements have been completed:
+Core backend functionality is implemented including:
 
-- Input validation and error handling added to controllers
-- Pagination with filtering/search in posts endpoint
-- Swagger/OpenAPI docs available at `/api/docs`
-- Helmet & rate limiting for security
-- Comprehensive unit and route tests ensuring 100% coverage of current logic
+- authentication
+- post management
+- plan management
+- subscription lifecycle
+- testing
+- documentation
 
-Currently focused on completing Phase 1 (Subscription Lifecycle) before adding advanced social features.
+Currently improving **frontend integration and feature enhancements**.
 
 ---
 
 ## 🧠 Design Philosophy
 
+- Clean architecture
 - Separation of concerns
-- Modular architecture
 - RESTful API design
 - Secure authentication flow
-- Scalable subscription management
-- Gateway-ready payment simulation
+- Scalable subscription system
+- Testable service layer
 
 ---
 
 ## 🧑‍💻 Getting Started
 
-```bash
+Clone repository:
+
+
 git clone <repo-url>
 cd project
+
+
+Install dependencies:
+
+
 npm install
+
+
+Create `.env` file:
+
+
+PORT=3000
+MONGO_URI=your_mongodb_uri
+JWT_SECRET=your_secret
+
+IMAGEKIT_PUBLIC_KEY=xxx
+IMAGEKIT_PRIVATE_KEY=xxx
+IMAGEKIT_URL_ENDPOINT=xxx
+
+
+Run server:
+
+
 npm run dev
+
+
+Access:
+
+
+API: http://localhost:3000
+
+Docs: http://localhost:3000/api/docs
+
+
+---
+
+## 📄 License
+
+This project is for **learning and portfolio purposes**.
