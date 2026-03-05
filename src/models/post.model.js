@@ -1,6 +1,6 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
-const postSchema = mongoose.Schema(
+const postSchema = new mongoose.Schema(
   {
     image: {
       type: String,
@@ -13,9 +13,13 @@ const postSchema = mongoose.Schema(
       maxlength: 500,
     },
     user: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
       required: true,
-      trim: true,
+    },
+    isPremium: {
+      type: Boolean,
+      default: false,
     },
   },
   { timestamps: true }
@@ -23,6 +27,5 @@ const postSchema = mongoose.Schema(
 
 postSchema.index({ user: 1, createdAt: -1 });
 
-module.exports = mongoose.model('Post', postSchema);
-
+module.exports = mongoose.model("Post", postSchema);
 

@@ -54,14 +54,15 @@ Routes → Controllers → Services → Models → Database
 ### 📸 Post Management
 
 - Create post with image upload (ImageKit CDN)
-- Fetch all posts with pagination
-- Fetch single post by ID
-- Delete post by ID
+- Fetch all posts with pagination and optional user filter / search
+- Fetch single post by ID with ID validation
+- Delete post by ID with ID validation
+- Basic input validation on controllers (required fields, caption length)
 - Post model with timestamps
 
 Pagination supports:
 - page
-- limit
+- limit (capped at 100)
 - totalPages
 - totalPosts
 - hasNextPage
@@ -91,6 +92,16 @@ Mongoose models defined for:
 
 MongoDB connection configured and working.
 
+### ⚙️ CORS
+
+When running frontend and backend on different ports (e.g. 3001 and 3000), you must allow cross‑origin requests. The server now uses `cors` middleware with
+
+```
+CORS_ORIGIN=http://localhost:3001
+```
+
+in `.env`. Customize as needed for other environments.
+
 ---
 
 ### 🛡️ Security
@@ -99,6 +110,8 @@ MongoDB connection configured and working.
 - JWT verification middleware
 - Protected routes require authentication
 - Sensitive fields excluded from API responses
+- Added helmet for security headers
+- Rate limiting middleware (100 requests / 15 min per IP)
 
 ---
 
@@ -132,9 +145,6 @@ MongoDB connection configured and working.
 - Comments
 - Follow system
 - Feed endpoint
-- Swagger documentation
-- Unit tests
-- Rate limiting
 - Logging system
 
 ---
@@ -175,9 +185,6 @@ MongoDB connection configured and working.
 
 ### Phase 4 – Production Readiness
 
-- Swagger API documentation
-- Unit & integration testing
-- Rate limiting
 - CORS configuration
 - Logging system
 - Environment-based configuration
@@ -187,6 +194,14 @@ MongoDB connection configured and working.
 ## 📌 Project Status
 
 Active development.
+
+Several backend improvements have been completed:
+
+- Input validation and error handling added to controllers
+- Pagination with filtering/search in posts endpoint
+- Swagger/OpenAPI docs available at `/api/docs`
+- Helmet & rate limiting for security
+- Comprehensive unit and route tests ensuring 100% coverage of current logic
 
 Currently focused on completing Phase 1 (Subscription Lifecycle) before adding advanced social features.
 
