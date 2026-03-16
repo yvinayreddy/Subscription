@@ -1,4 +1,13 @@
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api";
+const getDefaultApiBase = () => {
+  if (typeof window === "undefined") {
+    return "http://localhost:3000/api";
+  }
+
+  const host = window.location.hostname || "localhost";
+  return `http://${host}:3000/api`;
+};
+
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || getDefaultApiBase();
 
 async function request<T>(
   endpoint: string,

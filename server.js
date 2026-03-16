@@ -1,6 +1,9 @@
 const app =require('./app');
 const connectDb=require('./src/config/db.config');
 connectDb();
-app.listen(3000,()=>{
-    console.log("the server is running on //localhost:3000");
+const PORT = Number(process.env.PORT) || 3000;
+const HOST = process.env.HOST || '0.0.0.0';
+
+app.listen(PORT, HOST,()=>{
+    console.log(`the server is running on http://localhost:${PORT}`);
 });
