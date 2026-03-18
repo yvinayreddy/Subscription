@@ -14,6 +14,44 @@ const asyncHandler = require('../utils/asyncHandler');
  *
  * @throws {Error} If post does not exist or user is not authorized
  */
+/**
+ * @swagger
+ * /api/subscriptions:
+ *   post:
+ *     summary: Create a subscription
+ *     tags:
+ *       - Subscriptions
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/CreateSubscriptionInput'
+ *     responses:
+ *       201:
+ *         description: Subscription created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 ok:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: Subscription created successfully
+ *                 subscription:
+ *                   $ref: '#/components/schemas/Subscription'
+ *       400:
+ *         description: Validation error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
 
 exports.createSubscription = asyncHandler(async (req, res) => {
   const userId = req.user._id;
@@ -42,6 +80,52 @@ exports.createSubscription = asyncHandler(async (req, res) => {
  * @returns {Object} JSON response containing array of subscriptions
  *
  * @throws {400} If userId is invalid
+ */
+/**
+ * @swagger
+ * /api/subscriptions:
+ *   get:
+ *     summary: Get all subscriptions
+ *     tags:
+ *       - Subscriptions
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: status
+ *         schema:
+ *           type: string
+ *           enum: [active, cancelled, expired]
+ *         description: Filter by subscription status
+ *       - in: query
+ *         name: userId
+ *         schema:
+ *           type: string
+ *         description: Filter by user ID
+ *     responses:
+ *       200:
+ *         description: Subscriptions fetched successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 ok:
+ *                   type: boolean
+ *                   example: true
+ *                 count:
+ *                   type: integer
+ *                   example: 1
+ *                 subscriptions:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Subscription'
+ *       400:
+ *         description: Validation error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  */
 exports.getAllSubscriptions = asyncHandler(async (req, res) => {
   const { status, userId } = req.query;
@@ -74,6 +158,42 @@ exports.getAllSubscriptions = asyncHandler(async (req, res) => {
  * @throws {400} If subscription ID is invalid
  * @throws {404} If subscription not found
  */
+/**
+ * @swagger
+ * /api/subscriptions/{subscriptionId}:
+ *   get:
+ *     summary: Get a subscription by ID
+ *     tags:
+ *       - Subscriptions
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: subscriptionId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Subscription ID
+ *     responses:
+ *       200:
+ *         description: Subscription fetched successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 ok:
+ *                   type: boolean
+ *                   example: true
+ *                 subscription:
+ *                   $ref: '#/components/schemas/Subscription'
+ *       404:
+ *         description: Subscription not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
 exports.getSubscriptionById = asyncHandler(async (req, res) => {
   const { subscriptionId } = req.params;
 
@@ -95,6 +215,45 @@ exports.getSubscriptionById = asyncHandler(async (req, res) => {
  * @param {string} req.params.subscriptionId - Subscription ID
  *
  * @returns {Object} Updated subscription document
+ */
+/**
+ * @swagger
+ * /api/subscriptions/{subscriptionId}/cancel:
+ *   put:
+ *     summary: Cancel a subscription
+ *     tags:
+ *       - Subscriptions
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: subscriptionId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Subscription ID
+ *     responses:
+ *       200:
+ *         description: Subscription cancelled successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 ok:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: Subscription cancelled successfully
+ *                 subscription:
+ *                   $ref: '#/components/schemas/Subscription'
+ *       404:
+ *         description: Subscription not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  */
 
 exports.cancelSubscription = asyncHandler(async (req, res) => {
@@ -122,6 +281,42 @@ exports.cancelSubscription = asyncHandler(async (req, res) => {
  *
  * @throws {400} If subscription ID is invalid
  * @throws {404} If subscription not found
+ */
+/**
+ * @swagger
+ * /api/subscriptions/{subscriptionId}/renew:
+ *   put:
+ *     summary: Renew a subscription
+ *     tags:
+ *       - Subscriptions
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: subscriptionId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Subscription ID
+ *     responses:
+ *       200:
+ *         description: Subscription renewed successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 ok:
+ *                   type: boolean
+ *                   example: true
+ *                 subscription:
+ *                   $ref: '#/components/schemas/Subscription'
+ *       404:
+ *         description: Subscription not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  */
 exports.renewSubscription = asyncHandler(async (req, res) => {
   const { subscriptionId } = req.params;

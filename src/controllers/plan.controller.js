@@ -20,6 +20,42 @@ const asyncHandler = require('../utils/asyncHandler');
  *
  * @throws {400} If required fields are missing
  */
+/**
+ * @swagger
+ * /api/plans:
+ *   post:
+ *     summary: Create a subscription plan
+ *     tags:
+ *       - Plans
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/CreatePlanInput'
+ *     responses:
+ *       201:
+ *         description: Plan created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 ok:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: Plan created successfully
+ *                 plan:
+ *                   $ref: '#/components/schemas/Plan'
+ *       400:
+ *         description: Validation error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
 exports.createPlan = asyncHandler(async (req, res) => {
   const { name, price, duration } = req.body;
 
@@ -44,6 +80,32 @@ exports.createPlan = asyncHandler(async (req, res) => {
  * @access Public
  *
  * @returns {Object} JSON response containing array of plans
+ */
+/**
+ * @swagger
+ * /api/plans:
+ *   get:
+ *     summary: Get all subscription plans
+ *     tags:
+ *       - Plans
+ *     responses:
+ *       200:
+ *         description: Plans fetched successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 ok:
+ *                   type: boolean
+ *                   example: true
+ *                 count:
+ *                   type: integer
+ *                   example: 2
+ *                 plans:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Plan'
  */
 exports.getPlans = asyncHandler(async (req, res) => {
   const plans = await planService.getPlans();
@@ -70,6 +132,40 @@ exports.getPlans = asyncHandler(async (req, res) => {
  *
  * @throws {400} If plan ID is invalid
  * @throws {404} If plan not found
+ */
+/**
+ * @swagger
+ * /api/plans/{id}:
+ *   get:
+ *     summary: Get a plan by ID
+ *     tags:
+ *       - Plans
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Plan ID
+ *     responses:
+ *       200:
+ *         description: Plan fetched successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 ok:
+ *                   type: boolean
+ *                   example: true
+ *                 plan:
+ *                   $ref: '#/components/schemas/Plan'
+ *       404:
+ *         description: Plan not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  */
 exports.getPlanById = asyncHandler(async (req, res) => {
   const { id } = req.params;
@@ -100,6 +196,49 @@ exports.getPlanById = asyncHandler(async (req, res) => {
  * @throws {400} If plan ID is invalid
  * @throws {404} If plan not found
  */
+/**
+ * @swagger
+ * /api/plans/{id}:
+ *   put:
+ *     summary: Update a plan by ID
+ *     tags:
+ *       - Plans
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Plan ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/UpdatePlanInput'
+ *     responses:
+ *       200:
+ *         description: Plan updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 ok:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: Plan updated successfully
+ *                 plan:
+ *                   $ref: '#/components/schemas/Plan'
+ *       404:
+ *         description: Plan not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
 exports.updatePlan = asyncHandler(async (req, res) => {
   const { id } = req.params;
 
@@ -128,6 +267,41 @@ exports.updatePlan = asyncHandler(async (req, res) => {
  *
  * @throws {400} If plan ID is invalid
  * @throws {404} If plan not found
+ */
+/**
+ * @swagger
+ * /api/plans/{id}:
+ *   delete:
+ *     summary: Delete a plan by ID
+ *     tags:
+ *       - Plans
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Plan ID
+ *     responses:
+ *       200:
+ *         description: Plan deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 ok:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: Plan deleted successfully
+ *       404:
+ *         description: Plan not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  */
 exports.deletePlan = asyncHandler(async (req, res) => {
   const { id } = req.params;
