@@ -153,42 +153,6 @@ Test coverage includes:
 - controller validation
 - API response status checks
 
----
-
-## 📁 Project Structure
-src
-├ config
-│ ├ api.config.js
-│ ├ db.config.js
-│ └ imagekit.config.js
-├ controllers
-│ ├ user.controller.js
-│ ├ post.controller.js
-│ ├ plan.controller.js
-│ └ subscription.controller.js
-├ services
-│ ├ user.service.js
-│ ├ post.service.js
-│ ├ plan.service.js
-│ └ subscription.service.js
-├ models
-│ ├ user.model.js
-│ ├ post.model.js
-│ ├ plan.model.js
-│ └ subscription.model.js
-├ routes
-│ ├ user.routes.js
-│ ├ post.routes.js
-│ ├ plan.routes.js
-│ └ subscription.routes.js
-├ middlewares
-│ ├ auth.middleware.js
-│ ├ role.middleware.js
-│ └ error.middleware.js
-├ utils
-│ ├ asyncHandler.js
-│ └ validation.js
----
 
 ## 📡 API Endpoints
 
